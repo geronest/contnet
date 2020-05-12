@@ -1,13 +1,18 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 
 
 class NodeInfo():
     def __init__(self, name):
         self.name = name
+        self.properties = dict()
         self.cons = list()
 
     def add_con(self, name_target, weight_edge = 1.):
         self.cons.append([name_target, weight_edge])
+
+    def add_prop(self, name_prop, item_prop = None):
+        self.properties[name_prop] = item_prop
 
 class Nodes():
     def __init__(self, name, nodes):
@@ -17,12 +22,11 @@ class Nodes():
         for n in nodes:
             self.nodes[n.name] = n.cons
 
-# class Edge():
-
 
 class Net():
     def __init__(self, nodes):
         self.name_nodes = [n.name for n in nodes]
+        print(self.name_nodes)
         self.nodes = nodes
         self.num_nodes = len(self.nodes)
         self.cons = np.zeros((self.num_nodes, self.num_nodes))
@@ -35,7 +39,10 @@ class Net():
         for i in range(len(self.nodes)):
             ccons = self.nodes[i].cons # current cons
             for j in range(len(ccons)):
-                self.cons[i, self.name_nodes.index(ccons[j][0])] = ccons[j][1]
+                try:
+                    self.cons[i, self.name_nodes.index(ccons[j][0])] = ccons[j][1]
+                except Exception as e:
+                    print("[ERROR | infos/Net/__init__] {} not in self.name_nodes? {}".format(ccons[j][0], e))
 
             self.cons[i] /= np.sum(self.cons[i]) + 1e-7
 
