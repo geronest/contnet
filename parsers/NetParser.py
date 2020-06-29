@@ -14,10 +14,13 @@ class NetParser():
     def process_file(self):
         res = list()
         l_added = list()
+        dict_prop_added = dict()
         for row in self.reader:
             if len(row) >= 2: # each node must have at least two entries, NAME-NODE and TAG-NODE
                 n_toadd = NodeInfo(row[0])
                 n_toadd.add_prop('type', row[1])
+                if row[1] not in dict_prop_added: dict_prop_added[row[1]] = list()
+                dict_prop_added[row[1]].append(row[0])
 
                 for idx in range(len(row)-2):
                     split_nbr = row[idx+2].split('_')
@@ -30,7 +33,7 @@ class NetParser():
                         print("[ERROR | NetParser/process_file] split_nbr: {}, {}".format(split_nbr, e))
                 l_added.append(row[0])
                 res.append(n_toadd)
-        return res, l_added
+        return res, l_added, dict_prop_added
 
 
 
